@@ -1,0 +1,27 @@
+# Ideal
+/.project
+/**/*/.project
+/**/*/.settings
+/**/*/.classpath
+/**/*/.idea
+/.idea
+/**/*.iml
+/.editorconfig
+/**/*/.factorypath
+*.DS_Store
+
+# Logs
+/**/logs/
+/logs/
+/LOG_DIR_IS_UNDEFINED/
+
+# Pom backup
+/pom.xml.versionsBackup
+/**/*/pom.xml.versionsBackup
+
+# Maven Build
+/**/*/target
+/target/
+
+#Others
+/**/*.rdb
