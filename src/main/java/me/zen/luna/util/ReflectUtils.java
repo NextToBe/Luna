@@ -1,6 +1,20 @@
 package me.zen.luna.util;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+
 public class ReflectUtils {
+
+    private static ConcurrentMap<Class<?>, List<Field>> fieldsCache = new ConcurrentHashMap<>();
+
+    private static ConcurrentMap<Class<? extends Annotation>, ConcurrentMap<Class<?>, List<Field>>> annotatedFieldsCache = new ConcurrentHashMap<>();
+
 
     public static <T> T newInstance(Class<T> clazz) {
         try {
@@ -10,17 +24,53 @@ public class ReflectUtils {
         }
     }
 
-    public static boolean isPrimitive(Class<?> clazz) {
-        return clazz == boolean.class || clazz == Boolean.class || clazz == double.class
-            || clazz == Double.class || clazz == float.class || clazz == Float.class
-            || clazz == short.class || clazz == Short.class || clazz == int.class || clazz == Integer.class
-            || clazz == long.class || clazz == Long.class || clazz == String.class || clazz == byte.class
-            || clazz == Byte.class || clazz == char.class || clazz == Character.class;
+
+    /**
+     *
+     * @param clazz the class
+     * @return all fields of <code>clazz</code>, including pulibc, private, protected and superclasses' fields
+     */
+    public static List<Field> getAllFields(final Class<?> clazz) {
+        Assert.notNull(clazz, "The class must not be null");
+        if (fieldsCache.containsKey(clazz)) {
+            return fieldsCache.get(clazz);
+        }
+
+        final List<Field> fields = new ArrayList<>();
+        Class<?> currentClass = clazz;
+        while (currentClass != null) {
+            final Field[] declaredFields = currentClass.getDeclaredFields();
+            fields.addAll(Arrays.asList(declaredFields));
+            currentClass = currentClass.getSuperclass();
+        }
+        fieldsCache.put(clazz, fields);
+        return fields;
     }
 
-    public static boolean isPrimitive(Object object) {
-        return object instanceof Boolean || object instanceof Double || object instanceof Float
-            || object instanceof Short || object instanceof Integer || object instanceof Long
-            || object instanceof String || object instanceof Byte || object instanceof Character;
+    /**
+     *
+     * @param clazz the class
+     * @param annotation the annotation
+     * @return all fields of <code>clazz</code> annotated with <code>annotation</code>
+     */
+    public static List<Field> getAllFieldsListWithAnnoation(Class<?> clazz, Class<? extends Annotation> annotation) {
+        if (!annotatedFieldsCache.containsKey(annotation)) {
+            annotatedFieldsCache.putIfAbsent(annotation, new ConcurrentHashMap<>());
+        }
+
+        ConcurrentMap<Class<?>, List<Field>> cache = annotatedFieldsCache.get(annotation);
+        if (cache.containsKey(clazz)) {
+            return cache.get(clazz);
+        }
+
+        List<Field> fields = getAllFields(clazz);
+        final List<Field> annotatedFields = fields.stream().filter(field -> field.isAnnotationPresent(annotation)).collect(Collectors.toList());
+
+        cache.put(clazz, annotatedFields);
+        return annotatedFields;
     }
+
+
+
+
 }
