@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * This implementation is immutable, thread-safe, no lock is necessary.
  *
  */
-public class Hashids {
+public final class Hashids {
     /**
      * Max number that can be encoded with Hashids.
      */

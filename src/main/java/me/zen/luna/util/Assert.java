@@ -2,7 +2,7 @@ package me.zen.luna.util;
 
 import java.util.Collection;
 
-public class Assert {
+public final class Assert {
 
     public static void notNull(Object object, String msg) {
         if (null == object) {

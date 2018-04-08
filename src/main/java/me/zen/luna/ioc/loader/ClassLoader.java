@@ -1,4 +1,7 @@
 package me.zen.luna.ioc.loader;
 
-public class ClassLoader {
+import java.util.Set;
+
+public interface ClassLoader {
+    Set<Class<?>> load(Scanner scanner);
 }

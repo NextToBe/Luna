@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CollectionUtils {
+public final class CollectionUtils {
 
     /**
      *

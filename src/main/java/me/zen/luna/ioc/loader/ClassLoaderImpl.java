@@ -14,7 +14,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @Slf4j
-public class ClassPathLoader implements ClassLoader {
+public class ClassLoaderImpl implements ClassLoader {
 
     private static final String JAR_FILE   = "jar:file:";
     private static final String WSJAR_FILE = "wsjar:file:";
@@ -33,7 +33,7 @@ public class ClassPathLoader implements ClassLoader {
                 if (protocol.equals("file")) {
                     loadByPackage(result, url.getPath(), scanner.getPackageName(), scanner.getSuperClass(), scanner.isRecursive(), scanner.getAnnotation());
                 } else if (protocol.equals("jar")) {
-                    loadByJar(result, url, url.getPath(), scanner.getPackageName(), scanner.getSuperClass(), scanner.isRecursive(), scanner.getAnnotation());
+                    loadByJar(result, url, packageName, scanner.getSuperClass(), scanner.getAnnotation());
                 }
             }
         } catch (Exception e) {
@@ -69,8 +69,7 @@ public class ClassPathLoader implements ClassLoader {
     }
 
 
-    private void loadByJar(Set<Class<?>> result, final URL url, final String packagePath, final String packageName, final Class<?> superClass,
-                           final boolean recursive, final Class<? extends Annotation> annotation) throws ClassNotFoundException {
+    private void loadByJar(Set<Class<?>> result, final URL url, final String packagePath, final Class<?> superClass, final Class<? extends Annotation> annotation) throws ClassNotFoundException {
        try {
            if (!url.toString().startsWith(JAR_FILE) && !url.toString().startsWith(WSJAR_FILE)) {
                return;

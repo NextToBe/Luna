@@ -1,4 +1,4 @@
 package me.zen.luna.ioc.test;
 
-public class B {
+public class B extends A{
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-public class ReflectUtils {
+public final class ReflectUtils {
 
     private static ConcurrentMap<Class<?>, List<Field>> fieldsCache = new ConcurrentHashMap<>();
 

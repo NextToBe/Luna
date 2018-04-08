@@ -1,9 +1,10 @@
-package me.zen.luna.ioc;
+package me.zen.luna.ioc.injector;
 
 import java.lang.reflect.Field;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zen.luna.ioc.Container;
 import me.zen.luna.ioc.annotation.Inject;
 
 /**
@@ -11,7 +12,7 @@ import me.zen.luna.ioc.annotation.Inject;
  */
 @Slf4j
 @AllArgsConstructor
-public class FieldInjector {
+public class FieldInjector implements Injector{
 
     private Container container;
 

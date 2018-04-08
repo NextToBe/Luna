@@ -1,4 +1,4 @@
-package me.zen.luna.ioc.bean;
+package me.zen.luna.ioc;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
