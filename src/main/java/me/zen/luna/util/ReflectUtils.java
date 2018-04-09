@@ -2,6 +2,7 @@ package me.zen.luna.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,16 @@ public final class ReflectUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+        /**
+     * Determine whether cls belong to a normal type
+     *
+     * @param cls
+     * @return
+     */
+    public static boolean isNormalClass(Class<?> cls) {
+        return !cls.isInterface() && !Modifier.isAbstract(cls.getModifiers());
     }
 
 

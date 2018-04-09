@@ -1,14 +1,32 @@
 package me.zen.luna.ioc;
 
 import lombok.extern.slf4j.Slf4j;
+import me.zen.luna.ioc.annotation.Bean;
+import me.zen.luna.ioc.annotation.Inject;
+import me.zen.luna.ioc.injector.FieldInjector;
+import me.zen.luna.ioc.loader.ClassLoader;
+import me.zen.luna.ioc.loader.ClassLoaderImpl;
+import me.zen.luna.ioc.loader.Scanner;
+import me.zen.luna.util.Constants;
+import me.zen.luna.util.ReflectUtils;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 public class SimpleContainerImpl implements Container {
 
     private Map<String, BeanDefination> pool = new HashMap<>(32);
 
+    private Set<String> packages = new LinkedHashSet<>(Constants.basePackages);
+
+    public void scanPackages(String... packageName) {
+        packages.addAll(Arrays.asList(packageName));
+    }
+
+    public Set<String> scanPackages() {
+        return packages;
+    }
 
     @Override
     public void add(Object bean) {
@@ -106,6 +124,29 @@ public class SimpleContainerImpl implements Container {
         return true;
     }
 
+    @Override
+    public void init() {
+        if (pool.isEmpty()) {
+            return;
+        }
+
+        this.packages.stream()
+        .flatMap(this::loadClasses)
+        .filter(ReflectUtils::isNormalClass)
+        .forEach(clazz -> {
+            // register bean
+            if (clazz.isAnnotationPresent(Bean.class)) {
+                add(clazz);
+            }
+        });
+
+        if (!pool.isEmpty()) {
+            pool.values().forEach(bean -> inject(bean));
+        }
+
+        return;
+    }
+
 
     private void addBean(String name, BeanDefination beanDefination) {
         if (pool.put(name, beanDefination) != null) {
@@ -152,5 +193,21 @@ public class SimpleContainerImpl implements Container {
         }
 
         return null;
+    }
+
+    private Stream<Class<?>> loadClasses(String packageName) {
+        ClassLoader classLoader = new ClassLoaderImpl();
+        Scanner        scanner    = Scanner.builder().packageName(packageName).recursive(true).build();
+        Set<Class<?>> classInfos = classLoader.load(scanner);
+        return classInfos.stream();
+    }
+
+    private void inject(BeanDefination beanDefination) {
+        ClassDefination.put(beanDefination.getType());
+        List<FieldInjector> fieldInjectors = new ArrayList<>();
+        ReflectUtils.getAllFieldsListWithAnnoation(beanDefination.getType(), Inject.class)
+        .forEach(field -> fieldInjectors.add(new FieldInjector(this, field)));
+
+        fieldInjectors.forEach(injector -> injector.inject(beanDefination.getBean()));
     }
 }

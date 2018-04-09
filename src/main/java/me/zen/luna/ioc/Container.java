@@ -83,4 +83,7 @@ public interface Container {
     boolean clear();
 
 
+    void init();
+
+
 }
