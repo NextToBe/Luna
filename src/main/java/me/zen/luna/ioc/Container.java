@@ -1,6 +1,7 @@
 package me.zen.luna.ioc;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Container {
 
@@ -84,6 +85,10 @@ public interface Container {
 
 
     void init();
+
+    void scanPackages(String... packageName);
+
+    Set<String> scanPackages();
 
 
 }

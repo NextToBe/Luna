@@ -20,10 +20,12 @@ public class SimpleContainerImpl implements Container {
 
     private Set<String> packages = new LinkedHashSet<>(Constants.basePackages);
 
+    @Override
     public void scanPackages(String... packageName) {
         packages.addAll(Arrays.asList(packageName));
     }
 
+    @Override
     public Set<String> scanPackages() {
         return packages;
     }
@@ -126,7 +128,7 @@ public class SimpleContainerImpl implements Container {
 
     @Override
     public void init() {
-        if (pool.isEmpty()) {
+        if (!pool.isEmpty()) {
             return;
         }
 
@@ -141,10 +143,9 @@ public class SimpleContainerImpl implements Container {
         });
 
         if (!pool.isEmpty()) {
-            pool.values().forEach(bean -> inject(bean));
+            pool.values().forEach(this::inject);
         }
 
-        return;
     }
 
 
